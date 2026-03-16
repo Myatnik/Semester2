@@ -1,4 +1,4 @@
-#include "myvector.h"
+#include "array.h"
 using namespace std;
 
 Array::Array(int startCapacity)
