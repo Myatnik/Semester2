@@ -1,5 +1,6 @@
 ﻿#include <math.h>
 #include "rational.h"
+using namespace std;
 //simplify
 void Rational::simplify() {
 	if (denom < 0)
@@ -41,13 +42,25 @@ Rational::Rational(int number_input, int denom_input)
 	simplify();
 }
 //addition and extraction
-Rational& Rational::operator += (const Rational r)
+Rational& Rational::operator += (const Rational r) //did a throw exception
 {
-	numer = (numer*r.denom + denom*r.numer);
-	denom *= r.denom;
-	simplify();
-	return *this;
-}
+	if ((denom > INT_MAX / r.denom) or 
+		(numer > 0 and numer > INT_MAX / r.denom) or 
+		(numer < 0 and numer < INT_MIN / r.denom) or 
+		(r.numer > 0 and r.numer > INT_MAX / denom) or 
+		(r.numer < 0 and r.numer < INT_MIN / denom) or
+		(denom * r.numer > 0 and numer * r.denom > INT_MAX - denom * r.numer) or
+		(denom * r.numer < 0 and numer * r.denom < INT_MIN - denom * r.numer))
+	{
+		throw RationalException();
+	}
+	else {
+		numer = (numer * r.denom + denom * r.numer);
+		denom *= r.denom;
+		simplify();
+		return *this;
+	}
+} 
 
 Rational Rational::operator + (const Rational &r) const
 {
@@ -74,10 +87,19 @@ Rational& Rational::operator -= (const Rational& r)
 //multiplication and division
 Rational& Rational::operator *= (const Rational& r)
 {
-	numer = numer * r.numer;
-	denom = denom * r.denom;
-	simplify();
-	return (*this);
+	if ((numer > 0 and r.numer > 0 and numer > INT_MAX / r.numer) or
+		(numer > 0 and r.numer < 0 and r.numer < INT_MIN / numer) or
+		(numer < 0 and r.numer > 0 and numer < INT_MIN / r.numer) or
+		(numer < 0 and r.numer < 0 and r.numer < INT_MAX / numer))
+	{
+		throw RationalException();
+	}
+	else {
+		numer = numer * r.numer;
+		denom = denom * r.denom;
+		simplify();
+		return *this;
+	}
 }
 
 Rational Rational::operator * (const Rational& r) const
@@ -96,27 +118,6 @@ Rational Rational::operator / (const Rational& r) const
 {
 	Rational res(numer, denom);
 	return res /= r;
-}
-//root
-Rational Rational::sqr_root() const
-{
-	if (numer == 0) {
-		Rational Xn;
-		return Xn;
-	}
-	int numer1 = numer;
-	int denom1 = denom;
-
-	for (int j = 0; j < 3; j++)
-	{
-		denom1 = (denom1 + denom / denom1) / 2;
-	}
-	for (int j = 0; j < 3; j++)
-	{
-		numer1 = (numer1 + numer / numer1) / 2;
-	}
-	Rational Xn(numer1, denom1);
-	return Xn;
 }
 //increment and decrement
 Rational& Rational::operator ++()
