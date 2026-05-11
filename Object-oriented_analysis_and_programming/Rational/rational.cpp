@@ -19,6 +19,7 @@ void Rational::simplify() {
 			denom_save = denom_save % numer_save;
 	}
 	int nod = numer_save + denom_save;
+	//cout << numer_save << " " << denom_save << " " << nod << endl;
 	numer = numer / nod;
 	denom = denom / nod;
 }
@@ -118,6 +119,32 @@ Rational Rational::operator / (const Rational& r) const
 {
 	Rational res(numer, denom);
 	return res /= r;
+}
+//root
+Rational Rational::sqr_root() const
+{
+	if (numer == 0) {
+		Rational Xn;
+		return Xn;
+	}
+	int numer1 = numer;
+	int denom1 = denom;
+
+	for (int j = 0; j < 10; j++)
+	{
+		if (denom1 == 0)
+			denom1 = 1;
+		denom1 = (denom1 + denom / denom1) / 2;
+	}
+	for (int j = 0; j < 10; j++)
+	{
+		if (numer1 == 0)
+			numer1 = 1;
+		numer1 = (numer1 + numer / numer1) / 2;
+	}
+	Rational Xn(numer1, denom1);
+	cout << "Root found is " << Xn << endl;
+	return Xn;
 }
 //increment and decrement
 Rational& Rational::operator ++()
